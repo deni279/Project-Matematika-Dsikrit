@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<script src="deni.js"></script>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Cek Buku ISBN Deni</title>
+    <style>
+
+        body { 
+            font-family: Arial, sans-serif;
+            margin: 0;
+            height: 100vh;                   
+            display: flex;
+            justify-content: center;         
+            align-items: center;             
+            background-image: url("perpustakaan.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h2 {
+            color: white;
+        }
+
+        input, button { 
+            padding: 10px; 
+            font-size: 16px; 
+            margin-top: 10px;
+        }
+
+        #hasil { 
+            margin-top: 20px; 
+            font-weight: bold; 
+            font-size: 18px;
+            color: white
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h2>Cek Buku ISBN Deni</h2>
+
+    <input type="text" id="isbn" placeholder="Masukkan ISBN (10/13 digit)">
+    <br>
+
+    <button onclick="cekISBN()">Cek ISBN</button>
+
+    <p id="hasil"></p>
+
+</div>
+
+<script>
+
+function validateISBN10(isbn) {
+    isbn = isbn.replace(/[- ]/g, "");
+    if (isbn.length !== 10) return false;
+
+    let total = 0;
+    for (let i = 0; i < 9; i++) {
+        if (!/^\d$/.test(isbn[i])) return false;
+        total += (10 - i) * parseInt(isbn[i]);
+    }
+
+    let last = isbn[9].toUpperCase();
+    if (last === "X") {
+        total += 10;
+    } else if (/^\d$/.test(last)) {
+        total += parseInt(last);
+    } else {
+        return false;
+    }
+
+    return total % 11 === 0;
+}
+
+function validateISBN13(isbn) {
+    isbn = isbn.replace(/[- ]/g, "");
+    if (isbn.length !== 13) return false;
+
+    let total = 0;
+    for (let i = 0; i < 12; i++) {
+        if (!/^\d$/.test(isbn[i])) return false;
+        const multiplier = (i % 2 === 0) ? 1 : 3;
+        total += multiplier * parseInt(isbn[i]);
+    }
+
+    const checkDigit = (10 - (total % 10)) % 10;
+    return checkDigit === parseInt(isbn[12]);
+}
+
+function cekISBN() {
+    const isbn = document.getElementById("isbn").value.trim();
+
+    if (isbn.length === 10) {
+        document.getElementById("hasil").innerText =
+            validateISBN10(isbn) ? "ISBN-10 VALID ✔️" : "ISBN-10 TIDAK VALID ❌";
+    } 
+    else if (isbn.length === 13) {
+        document.getElementById("hasil").innerText =
+            validateISBN13(isbn) ? "ISBN-13 VALID ✔️" : "ISBN-13 TIDAK VALID ❌";
+    } 
+    else {
+        document.getElementById("hasil").innerText =
+            "Format ISBN tidak sesuai (harus 10 atau 13 digit).";
+    }
+}
+
+</script>
+
+</body>
+</html>
